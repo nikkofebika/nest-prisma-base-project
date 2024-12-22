@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  admin
+  user
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(100)
+  description String? @db.Text
+
+  created_at  DateTime         @default(now())
+  created_by  Int
+  updated_at  DateTime         @updatedAt
+  updated_by  Int?
+  deleted_at  DateTime?
+  deleted_by  Int?
+  permissions PermissionRole[]
+  User        User[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id        Int          @id @default(autoincrement())
+  parent    Permission?  @relation("ParentChild", fields: [parent_id], references: [id])
+  children  Permission[] @relation("ParentChild")
+  parent_id Int?
+  name      String       @unique() @db.VarChar(150)
+
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+  roles      PermissionRole[]
+
+  @@map("permissions")
+}
+
+model PermissionRole {
+  permission    Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  permission_id Int
+  role          Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role_id       Int
+
+  @@unique([permission_id, role_id])
+  @@map("permission_role")
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  role              Role?     @relation(fields: [role_id], references: [id])
+  role_id           Int?
+  name              String    @db.VarChar(100)
+  email             String    @unique @db.VarChar(100)
+  email_verivied_at DateTime? @db.Timestamp()
+  password          String    @db.VarChar(100)
+  type              UserType  @default(user)
+
+  created_at DateTime  @default(now())
+  created_by Int
+  updated_at DateTime  @updatedAt
+  updated_by Int?
+  deleted_at DateTime?
+  deleted_by Int?
+
+  contacts   Contact[]
+  userDetail UserDetail?
+  token      Token[]
+
+  @@map("users")
+}
+
+model UserDetail {
+  id      Int  @id @default(autoincrement())
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int  @unique
+
+  @@map("user_details")
+}
+
+enum TokenType {
+  email_verification
+  reset_password
+}
+
+model Token {
+  id         Int       @id @default(autoincrement())
+  User       User?     @relation(fields: [user_id], references: [id])
+  user_id    Int?
+  type       TokenType
+  token      String
+  expires_at DateTime
+
+  created_at DateTime  @default(now())
+  created_by Int
+  updated_at DateTime  @updatedAt
+  updated_by Int?
+  deleted_at DateTime?
+  deleted_by Int?
+
+  @@map("tokens")
+}
+
+model Contact {
+  id          Int    @id @default(autoincrement())
+  user        User?  @relation(fields: [user_id], references: [id])
+  user_id     Int?
+  address     String @db.Text
+  postal_code String @db.VarChar(10)
+  city        String @db.VarChar(100)
+  country     String @db.VarChar(100)
+
+  @@map("contacts")
+}
