@@ -39,11 +39,11 @@ CREATE TABLE `users` (
     `role_id` INTEGER NULL,
     `name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(100) NOT NULL,
-    `email_verivied_at` TIMESTAMP NULL,
+    `email_verified_at` TIMESTAMP NULL,
     `password` VARCHAR(100) NOT NULL,
     `type` ENUM('admin', 'user') NOT NULL DEFAULT 'user',
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `created_by` INTEGER NOT NULL,
+    `created_by` INTEGER NULL,
     `updated_at` DATETIME(3) NOT NULL,
     `updated_by` INTEGER NULL,
     `deleted_at` DATETIME(3) NULL,
@@ -68,14 +68,15 @@ CREATE TABLE `tokens` (
     `user_id` INTEGER NULL,
     `type` ENUM('email_verification', 'reset_password') NOT NULL,
     `token` VARCHAR(191) NOT NULL,
-    `expires_at` DATETIME(3) NOT NULL,
+    `expires_at` DATETIME NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `created_by` INTEGER NOT NULL,
+    `created_by` INTEGER NULL,
     `updated_at` DATETIME(3) NOT NULL,
     `updated_by` INTEGER NULL,
     `deleted_at` DATETIME(3) NULL,
     `deleted_by` INTEGER NULL,
 
+    UNIQUE INDEX `tokens_token_key`(`token`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

@@ -49,6 +49,7 @@ async function main() {
             email: "admin@gmail.com",
             password: password,
             type: "admin",
+            email_verified_at: new Date(),
             created_by: 1
         }
     });
@@ -61,6 +62,7 @@ async function main() {
             email: "user@gmail.com",
             password: password,
             type: "user",
+            email_verified_at: new Date(),
             created_by: 1,
             role: {
                 connect: {

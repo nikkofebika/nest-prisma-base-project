@@ -19,8 +19,7 @@ import { User } from 'src/common/decorators/params/user/user.decorator';
 import { IsReturnPagination } from 'src/common/decorators/reflectors/is-return-pagination/is-return-pagination.decorator';
 import { HasPermission } from 'src/common/guards/permission/permission.guard';
 import {
-  PermissionsService,
-  userPermission,
+  userPermission
 } from 'src/permissions/permissions.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IndexDto } from './dto/index.dto';
@@ -34,8 +33,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    private readonly permissionService: PermissionsService,
-  ) {}
+  ) { }
 
   @Get('me')
   async me(@User() user: UserModel) {

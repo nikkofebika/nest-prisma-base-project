@@ -11,15 +11,13 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 @ValidatorConstraint({ async: true })
 export class UniqueValidator implements ValidatorConstraintInterface {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async validate(
     value: any,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
     if (validationArguments.constraints.length <= 0) return false;
-    console.log('validationArguments', validationArguments);
-    console.log('validationArguments', validationArguments.object);
 
     const { model, column }: { model: string; column: string } =
       validationArguments.constraints[0];

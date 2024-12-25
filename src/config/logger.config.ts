@@ -2,7 +2,6 @@ import { WinstonModuleOptions, utilities } from 'nest-winston';
 import { format, transports } from 'winston';
 
 let logger: WinstonModuleOptions;
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 if (process.env.NODE_ENV !== 'production') {
   logger = {
     format: format.json(),

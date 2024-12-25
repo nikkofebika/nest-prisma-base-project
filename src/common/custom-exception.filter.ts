@@ -35,9 +35,9 @@ export class CustomExceptionFilter implements ExceptionFilter {
       };
     } else {
       // this.logger.error(exception)
-      console.log('exception', exception.message);
-      console.log('exception', exception.name);
-      console.log('exception', exception.stack);
+      console.log('exception message', exception.message);
+      console.log('exception name', exception.name);
+      console.log('exception stack', exception.stack);
       data = {
         message: 'Internal Server Error',
         statusCode,

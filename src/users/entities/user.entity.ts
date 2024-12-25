@@ -6,7 +6,7 @@ export class UserEntity {
   role_id: number;
   name: string;
   email: string;
-  email_verivied_at: Date;
+  email_verified_at: Date;
   type: UserType;
   created_at: Date;
   created_by: number;
