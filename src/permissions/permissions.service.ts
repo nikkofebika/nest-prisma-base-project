@@ -86,7 +86,7 @@ export class PermissionsService {
       },
       where: {
         name: {
-          in: names,
+          in: names ? names : [],
         },
       },
     });

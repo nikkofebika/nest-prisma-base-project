@@ -2,19 +2,21 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { WinstonModule } from 'nest-winston';
 import { loggerConfig } from 'src/config/logger.config';
 import { UsersModule } from 'src/users/users.module';
 import { CustomExceptionFilter } from './custom-exception.filter';
 import { CustomValidationPipePipe } from './custom-validation-pipe.pipe';
 import { AuthGuard } from './guards/auth/auth.guard';
+import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { PermissionGuard } from './guards/permission/permission.guard';
 import { CommonResponseInterceptor } from './interceptors/common-response.interceptor';
 import { PrismaService } from './services/prisma/prisma.service';
 import { TokensService } from './services/tokens/tokens.service';
 import { ExistValidator } from './validator/exist.validator';
 import { UniqueValidator } from './validator/unique.validator';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Global()
 @Module({
@@ -23,6 +25,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       isGlobal: true,
       cache: true,
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 60,
+    }]),
     WinstonModule.forRoot(loggerConfig),
     EventEmitterModule.forRoot({
     }),
@@ -59,6 +65,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     {
       provide: APP_INTERCEPTOR,
       useClass: CommonResponseInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard
     },
     {
       provide: APP_GUARD,

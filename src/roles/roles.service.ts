@@ -16,7 +16,6 @@ export class RolesService implements ISoftDeleteService<Role> {
 
   async create(createRoleDto: CreateRoleDto): Promise<any> {
     const { permissions, ...validated } = createRoleDto;
-
     const dto = {
       ...validated,
       created_by: 1,

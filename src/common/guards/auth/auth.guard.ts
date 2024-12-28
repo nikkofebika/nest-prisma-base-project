@@ -12,12 +12,15 @@ import { Request } from 'express';
 const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
+const IS_NO_NEED_EMAIL_VERIFICATION = 'isNoNeedEmailVerification';
+export const NoNeedEmailVerification = () => SetMetadata(IS_NO_NEED_EMAIL_VERIFICATION, true);
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly jwtServce: JwtService,
+    private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -31,14 +34,24 @@ export class AuthGuard implements CanActivate {
 
     if (!token) throw new UnauthorizedException();
 
+    const isNoNeedEmailVerification = this.reflector.getAllAndOverride<boolean>(IS_NO_NEED_EMAIL_VERIFICATION, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+
     try {
-      const payload = await this.jwtServce.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync(token);
       request.user = payload;
+
+      if (isNoNeedEmailVerification && !request.user?.email_verified_at) {
+        return true;
+      }
+
+      if (request.user?.email_verified_at) return true;
     } catch (error) {
       throw new UnauthorizedException();
     }
-
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {

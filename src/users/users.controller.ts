@@ -25,6 +25,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { IndexDto } from './dto/index.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
+import { NoNeedEmailVerification } from 'src/common/guards/auth/auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
@@ -35,6 +36,7 @@ export class UsersController {
     private readonly logger: LoggerService,
   ) { }
 
+  @NoNeedEmailVerification()
   @Get('me')
   async me(@User() user: UserModel) {
     return user;

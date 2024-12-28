@@ -10,8 +10,7 @@ export class TokensService {
     constructor(private readonly prismaService: PrismaService) { }
 
     async findToken(token: string, type: TokenType = TokenType.EMAIL_VERIFICATION): Promise<Token> {
-        console.log(DateTime.now().toString())
-        return await this.prismaService.token.findFirst({
+        return this.prismaService.token.findFirst({
             include: { user: true },
             where: {
                 token,
@@ -35,9 +34,17 @@ export class TokensService {
     }
 
     async expireToken(token: string): Promise<void> {
-        this.prismaService.token.update({
+        await this.prismaService.token.update({
             where: { token },
             data: { expires_at: new Date() }
+        })
+    }
+
+    async clearUserToken(user: User, type: TokenType): Promise<void> {
+        await this.prismaService.token.deleteMany({
+            where: {
+                user_id: user.id,
+            }
         })
     }
 }
